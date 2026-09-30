@@ -1,6 +1,9 @@
 // interactions.js
 // Like / Unlike a post/entry
 function toggleLike(objectType, objectId) {
+    const pendingButton = document.getElementById(`like-btn-${objectId}`);
+    if (!pendingButton || pendingButton.disabled) return;
+    pendingButton.disabled = true;
     fetch(`/interactions/like/${objectType}/${objectId}/`, {
         method: 'POST',
         headers: {
@@ -8,9 +11,13 @@ function toggleLike(objectType, objectId) {
             'Content-Type': 'application/json',
         },
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok || res.redirected) throw new Error('Could not update your like. Please try again.');
+        return res.json();
+    })
     .then(data => {
         const btn = document.getElementById(`like-btn-${objectId}`);
+        btn.setAttribute('aria-pressed', String(data.liked));
         btn.innerHTML = `
             <i class="${data.liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
             <span id="like-count-${objectId}">${data.like_count}</span>
@@ -25,7 +32,9 @@ function toggleLike(objectType, objectId) {
     })
     .catch(err => {
         console.error('Like toggle failed:', err);
-    });
+        window.crimsonToast?.('Could not update your like. Please try again.');
+    })
+    .finally(() => { pendingButton.disabled = false; });
 }
 
 // Toggle post options menu (three dots)

@@ -1,188 +1,52 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load interaction_tags %}
-{% load markdown_extras %}
-
-{% block title %}My Stream{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">
-{% endblock %}
-
+{% block title %}Home · Crimson{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">{% endblock %}
 {% block content %}
-
-<span id="toggle-grid"><i class="fa-solid fa-table"></i></i></span>
-<div class="profile-container">
-    
-        <h1>The Sacred Timeline...</h1>
-
-    {% if posts %}
-    <div class="posts-grid">
-        {% for post in posts %}
-        {% with entry_author=post.get_author %}
-        <div class="post-card" onclick="window.location.href='{% url 'entry_detail' post.id %}'">
-
-            <!-- POST HEADER -->
-            <div class="post-header">
-
-                <!-- Top row: avatar + author name -->
-                <div class="post-header-top">
-                    <div class="post-avatar-wrapper">
-                        
-                        {% if entry_author and entry_author.profileImageUrl %}
-                            <img src="{{ entry_author.profileImageUrl }}" alt="Profile Image" class="post-avatar">
-                        {% elif entry_author.profileImage %}
-                            <img src="{{ entry_author.profileImage.url }}" alt="Profile Image" class="post-avatar">
-                        {% else %}
-                            <div class="post-avatar-placeholder">
-                                <i class="fa-regular fa-user"></i>
-                            </div>
-                        {% endif %}
-                    </div>
-
-{% with entry_author=post.get_author %}
-    <a class="post-author-name author-link" 
-       href="{% if entry_author %}{% url 'author-profile' entry_author.id %}{% else %}#{% endif %}">
-       {% if entry_author %}
-           {{ entry_author.displayName }}
-       {% elif post.author.user %}
-           {{ post.author.user.username }}
-       {% else %}
-           Unknown Author
-       {% endif %}
-    </a>
-{% endwith %}
-                </div>
-
-                <hr class="menu-divider">
-                <!-- Title row -->
-                <div class="post-title-row">
-                    <h3 class="post-title">{{ post.title }}</h3>
-                </div>
-
-            </div>
-            
-
-            <!-- POST CONTENT -->
-            {% if post.content_type == "image" %}
-                {% if post.image %}
-                    <figure class="stream-post-media">
-                        <img src="{{ post.image.url }}" class="post-content-image">
-                        {% if post.content %}
-                            <figcaption>{{ post.content }}</figcaption>
-                        {% endif %}
-                    </figure>
-                {% elif post.image_url %}
-                    <figure class="stream-post-media">
-                        <img src="{{ post.image_url }}" class="post-content-image">
-                        {% if post.content %}
-                            <figcaption>{{ post.content }}</figcaption>
-                        {% endif %}
-                    </figure>
-                {% endif %}
-
-            {% elif post.content_type == "text/markdown" %}
-                <section class="stream-post-body">
-                    {{ post.content | render_markdown }}
-                </section>
-
-            {% else %}
-                <p class="stream-post-body">{{ post.content }}</p>
-            {% endif %}
-
-            <!-- POST DATE -->
-            <span class="post-date">
-                Published on {{ post.published_at|date:"M d, Y H:i" }}
-        {%if current_user_author.host ==  entry_author.host%}
-        {% if post.is_edited %}<br>(edited){% endif %}
-        {%endif%}
-            </span>
-            <!-- POST INTERACTIONS -->
-            <div class="post-interactions">
-                <!-- COMMENT BUTTON -->
-                <button class="comment-btn">
-                    <i class="fa-regular fa-comment"></i>
-                    <span class="comment-count">{{ post.comments.count }}</span>
-                </button>
-
-                <!-- LIKE BUTTON -->
-                {% user_has_liked post request.user as liked %}
-                <button id="like-btn-{{ post.id }}" class="like-btn-heart" onclick="event.stopPropagation(); toggleLike('entry', '{{ post.id }}')">
-                    <i class="fa{% if liked %}s{% else %}r{% endif %} fa-heart"></i>
-                    <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span>
-                </button>
-            </div>
-
-<!-- POST OPTIONS (three dots menu) -->
-{% if post.visibility != "DELETED" and post.author == request.user %}
-<div class="post-options">
-    <button class="options-btn" 
-            onclick="event.stopPropagation(); togglePostOptions('{{ post.id }}')">
-        <i class="fa-solid fa-ellipsis-v"></i>
+<div class="feed-layout">
+<section class="feed-column" aria-label="Your feed">
+    <header class="page-heading"><div><span class="eyebrow">YOUR DAILY DOSE OF HUMAN</span><h1>Home<span class="heading-dot">.</span></h1><p>A few good people. A world of ideas.</p></div><a class="icon-button" href="{% url 'home' %}" title="Refresh feed" aria-label="Refresh feed">↻</a></header>
+    <section class="feed-welcome">
+        <div><span class="eyebrow">LESS NOISE. MORE YOU.</span><h2>Your feed.<br>Your kind of people.</h2><p>Follow a new perspective.<br>Start a conversation worth having.</p><a href="{% url 'authors-list' %}">Find your people {% include 'components/icon.html' with name='arrow' %}</a></div>
+        <div class="orbital-art" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit-core">c.</span><span class="orbit-dot"></span></div>
+    </section>
+    <button class="quick-compose" type="button" data-compose>
+        {% include 'components/avatar.html' with author=current_user_author %}
+        <span>What's on your mind, {{ current_user_author.displayName|default:user.username }}?<small>Share a thought. Make a connection.</small></span>
+        <span class="compose-plus">+</span>
     </button>
-
-    <div id="post-options-menu-{{ post.id }}" class="post-options-menu hidden">
-        <button class="menu-edit-btn" type="button"
-        onclick="event.stopPropagation();
-        window.openEditPostDescription(
-            '{{ post.id }}',
-            `{{ post.content|escapejs }}`
-        );">
-            <i class="fa-solid fa-pen-to-square"></i> Edit Post
-        </button>
-        <hr class="menu-divider">
-        <button class="menu-delete-btn" type="button"
-                onclick="event.stopPropagation();if (confirm('Are you sure you want to delete?\n\nThis cannot be undone >:(')) { 
-                        document.getElementById('delete-form-{{ post.id }}').submit(); 
-                        }">
-            <i class="fa-solid fa-trash"></i> Delete
-        </button>
-        <!-- Future options can go here, e.g. -->
-        <!-- <button class="menu-item">Edit Post</button> -->
+    <div class="feed-controls">
+        <nav class="feed-tabs" aria-label="Feed filter">
+            <a href="?feed=latest{% if search_query %}&amp;q={{ search_query|urlencode }}{% endif %}" {% if active_feed == 'latest' %}aria-current="page"{% endif %}>Latest</a>
+            <a href="?feed=following{% if search_query %}&amp;q={{ search_query|urlencode }}{% endif %}" {% if active_feed == 'following' %}aria-current="page"{% endif %}>Following</a>
+            <a href="?feed=media{% if search_query %}&amp;q={{ search_query|urlencode }}{% endif %}" {% if active_feed == 'media' %}aria-current="page"{% endif %}>Media</a>
+        </nav>
+        <form class="feed-search" method="get" role="search"><input type="hidden" name="feed" value="{{ active_feed }}">{% include 'components/icon.html' with name='search' %}<input type="search" name="q" value="{{ search_query }}" placeholder="Search this feed" aria-label="Search this feed"><button class="sr-only" type="submit">Search</button></form>
     </div>
-
-    <!-- Hidden form (keeps POST + CSRF, but triggered via JS) -->
-    <form id="delete-form-{{ post.id }}" method="POST" 
-          action="{% url 'delete_entry_ui' post.id %}" style="display:none;">
-        {% csrf_token %}
-    </form>
-</div>
-{% endif %}
-
-        </div>
-        {% endwith %}
+    {% if search_query %}<div class="search-summary">Results for “{{ search_query }}” <a href="?feed={{ active_feed }}">Clear search</a></div>{% endif %}
+    <div class="social-feed">
+        {% for post in posts %}{% include 'components/post.html' %}{% empty %}
+        <div class="feed-empty"><span class="empty-icon">{% include 'components/icon.html' with name='message' %}</span><h2>{% if search_query %}No conversations found.{% elif active_feed == 'following' %}Good feeds start with people.{% elif active_feed == 'media' %}Room for a different perspective.{% else %}Every community starts somewhere.{% endif %}</h2><p>{% if search_query %}Try a different word, or clear your search.{% elif active_feed == 'following' %}Follow someone from Explore. Their posts will appear here.{% elif active_feed == 'media' %}The first image is still to come. Share something worth seeing.{% else %}The feed is quiet for now. Your first post could be the start of something good.{% endif %}</p><button type="button" class="btn btn-primary" data-compose>Start a conversation {% include 'components/icon.html' with name='arrow' %}</button></div>
         {% endfor %}
-
     </div>
-    {% else %}
-        <p class="empty-state">No posts yet.</p>
-    {% endif %}
-
-<!-- Edit Description Modal – only bio/description editable -->
-<div id="edit-description-modal" class="modal hidden">
-  <div class="modal-content">
-    <h2>Did you make a Typo?</h2>
-    <form id="edit-description-form">
-    {% csrf_token %}
-<input type="hidden" name="post_id">
-
-<textarea name="content" id="edit-description" placeholder="Update your post..."></textarea>
-      <div class="modal-actions">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" id="close-edit-description" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
-  </div>
+    {% if page_obj.has_other_pages %}<nav class="feed-pagination" aria-label="Feed pages">{% if page_obj.has_previous %}<a class="btn btn-secondary" href="?feed={{ active_feed }}&amp;q={{ search_query|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Newer posts</a>{% endif %}<span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a class="btn btn-secondary" href="?feed={{ active_feed }}&amp;q={{ search_query|urlencode }}&amp;page={{ page_obj.next_page_number }}">Older posts</a>{% endif %}</nav>{% endif %}
+</section>
+<aside class="community-column" aria-label="Your community">
+    <section class="community-card personal-card">
+        <div class="personal-cover"><span>YOUR LITTLE CORNER</span><span aria-hidden="true">✳</span></div>
+        <a class="personal-avatar" href="{% url 'my-profile' %}">{% include 'components/avatar.html' with author=current_user_author %}</a>
+        <h2>{{ current_user_author.displayName|default:user.username }}</h2><p>@{{ user.username }}</p>
+        <div class="personal-stats"><a href="{% url 'author-following' current_user_author.id %}"><strong>{{ current_user_author.get_following_count }}</strong><span>Following</span></a><a href="{% url 'author-followers' current_user_author.id %}"><strong>{{ current_user_author.get_followers_count }}</strong><span>Followers</span></a></div>
+        <a class="panel-link" href="{% url 'my-profile' %}">Your profile {% include 'components/icon.html' with name='arrow' %}</a>
+    </section>
+    <section class="community-card"><div class="panel-heading"><h2>People to discover</h2>{% include 'components/icon.html' with name='explore' %}</div>
+        {% for author in suggested_authors %}<a class="suggestion" href="{% url 'author-profile' author.id %}">{% include 'components/avatar.html' with author=author %}<span><strong>{{ author.displayName }}</strong><small>{% if author.user %}On your node{% else %}From another node{% endif %}</small></span><span class="suggestion-arrow">↗</span></a>
+        {% empty %}<p class="panel-muted">Your circle is just getting started. Explore authors or connect with someone on another node.</p>{% endfor %}
+        <a class="panel-link" href="{% url 'authors-list' %}">Explore the community {% include 'components/icon.html' with name='arrow' %}</a>
+    </section>
+    <section class="community-note"><span class="eyebrow">CONNECTED, ON YOUR TERMS</span><h3>One community.<br>Many places to call home.</h3><p>Your node is independent. Your conversations can travel further.</p><a href="{% url 'authors-list' %}">Meet the network ↗</a></section>
+</aside>
 </div>
-</div>
-<style>
-    #stream i{
-        transform: scale(1.5);
-        font-weight: 800;
-    }
-</style>
+{% include 'components/edit_post.html' %}
 {% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/interactions.js' %}"></script>
-{% endblock %}
+{% block extra_js %}<script src="{% static 'js/interactions.js' %}"></script>{% endblock %}

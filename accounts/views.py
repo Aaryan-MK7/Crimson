@@ -777,6 +777,10 @@ def authors_list(request):
         # Everyone else sees only approved authors
         authors = Author.objects.filter(is_approved=True)
 
+    search_query = request.GET.get('q', '').strip()[:200]
+    if search_query:
+        authors = authors.filter(displayName__icontains=search_query)
+
     current_user_author = None
     if request.user.is_authenticated:
         try:
@@ -787,6 +791,7 @@ def authors_list(request):
     return render(request, 'accounts/authors_list.html', {
         'authors': authors,
         'current_user_author': current_user_author,
+        'search_query': search_query,
     })
 
 

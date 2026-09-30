@@ -9,10 +9,10 @@
     margin: 0 auto;
     padding: 45px;
     border-radius: 22px;
-    background: rgba(255,255,255,0.92);
+    background: var(--surface);
     backdrop-filter: blur(20px);
-    box-shadow: 0 20px 50px rgba(244,23,23,0.15);
-    border: 1px solid rgba(255,26,98,0.15);
+    box-shadow: 0 20px 50px var(--shadow-color);
+    border: 1px solid var(--accent-border);
     position: relative;
     animation: float 6s ease-in-out infinite alternate;
 }
@@ -23,13 +23,13 @@
 .edit-header h1 {
     font-size: 28px;
     font-weight: 600;
-    background: linear-gradient(90deg, #ff1a62, #ffa023);
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 .edit-header p {
     font-size: 15px;
-    color: #555;
+    color: var(--text-secondary);
 }
 
 /* ============================= */
@@ -49,7 +49,7 @@
 .form-group label {
     font-weight: 600;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--text);
 }
 
 .edit-form input,
@@ -58,8 +58,8 @@
     width: 100%;
     padding: 16px 18px;
     border-radius: 16px;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--border);
+    background: var(--surface);
     font-size: 15px;
     transition: all 0.3s ease;
     box-sizing: border-box;
@@ -68,9 +68,9 @@
 .edit-form input:focus,
 .edit-form textarea:focus,
 .edit-form select:focus {
-    border-color: #ff1a62;
-    background: #fff;
-    box-shadow: 0 0 0 6px rgba(255,26,98,0.12);
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 6px var(--accent-soft);
     outline: none;
 }
 
@@ -91,8 +91,8 @@
     flex: 0 0 60%;
     height: 180px;
     border-radius: 16px;
-    border: 2px dashed rgba(255,26,98,0.25);
-    background: #fafafa;
+    border: 2px dashed var(--accent-border);
+    background: var(--surface-inset);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,8 +105,8 @@
 }
 
 .image-upload-box:hover {
-    border-color: #ff1a62;
-    box-shadow: 0 12px 30px rgba(244,23,23,0.2);
+    border-color: var(--accent);
+    box-shadow: 0 12px 30px var(--shadow-color);
 }
 
 .upload-content {
@@ -114,7 +114,7 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: #666;
+    color: var(--text-muted);
     font-size: 14px;
     text-align: center;
     pointer-events: none;
@@ -135,8 +135,8 @@
 .remove-image-btn {
     flex: 0 0 40%;
     border-radius: 16px;
-    border: 2px solid #ff1a62;
-    color: #ff1a62;
+    border: 2px solid var(--accent);
+    color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -146,10 +146,10 @@
     background: transparent;
 }
 .remove-image-btn:hover {
-    background: linear-gradient(45deg, #ff1a62, #ffa023);
-    color: #fff;
+    background: linear-gradient(45deg, var(--accent), var(--accent-hover));
+    color: var(--on-accent);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255,26,98,0.25);
+    box-shadow: 0 8px 20px var(--accent-border);
 }
 
 /* ============================= */
@@ -192,5 +192,5 @@ textarea {
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 18px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid var(--border);
 }

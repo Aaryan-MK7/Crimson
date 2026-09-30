@@ -1,0 +1,5 @@
+<span class="avatar">
+{% if author.profileImageUrl %}<img src="{{ author.profileImageUrl }}" alt="" loading="lazy">
+{% elif author.profileImage %}<img src="{{ author.profileImage.url }}" alt="" loading="lazy">
+{% else %}{{ author.displayName|default:"?"|first|upper }}{% endif %}
+</span>

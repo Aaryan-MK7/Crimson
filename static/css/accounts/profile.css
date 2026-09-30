@@ -7,11 +7,11 @@
     gap: 30px;
     padding: 25px;
     border-radius: 20px;
-    background: rgba(255,255,255,1);
+    background: var(--surface);
     -webkit-backdrop-filter: blur(20px); /* Safari */
     backdrop-filter: blur(20px);
-    box-shadow: 0 20px 50px rgba(244,23,23,0.15);
-    border: 1px solid rgba(255,26,98,0.15);
+    box-shadow: 0 20px 50px var(--shadow-color);
+    border: 1px solid var(--accent-border);
     position: relative;
     overflow: hidden;
     -webkit-animation: float 6s ease-in-out infinite alternate;
@@ -38,7 +38,7 @@
 .profile-description-side {
     flex: 0 0 25%;
     padding-left: 20px;
-    border-left: 1px solid rgba(0,0,0,0.08);
+    border-left: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -46,15 +46,15 @@
 .profile-description-side h3 {
     margin-bottom: 12px;
     font-size: 18px;
-    color: #ff1a62;
+    color: var(--accent);
 }
 .profile-description-side p {
     font-size: 15px;
     line-height: 1.7;
-    color: #444;
+    color: var(--text-secondary);
 }
 .empty-desc {
-    color: #999;
+    color: var(--text-muted);
 }
 
 /* ============================= */
@@ -66,9 +66,9 @@
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    border: 3px solid rgba(255,26,98,0.25);
+    border: 3px solid var(--accent-border);
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(244,23,23,0.2);
+    box-shadow: 0 15px 35px var(--shadow-color);
     -webkit-transition: -webkit-transform 0.4s ease;
     transition: transform 0.4s ease;
     position: relative;
@@ -86,9 +86,9 @@
     width: 150%;
     height: 150%;
     background: radial-gradient(circle,
-        rgba(255,26,98,0.25) 0%,
-        rgba(244,23,23,0.18) 40%,
-        rgba(255,160,35,0.12) 70%,
+        var(--accent-border) 0%,
+        var(--shadow-color) 40%,
+        var(--accent-soft) 70%,
         transparent 80%);
     -webkit-filter: blur(15px);
     filter: blur(15px);
@@ -119,9 +119,9 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: -webkit-linear-gradient(315deg, #ff1a62, #ffa023);
-    background: linear-gradient(135deg, #ff1a62, #ffa023);
-    color: white;
+    background: -webkit-linear-gradient(315deg, var(--accent), var(--accent-hover));
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    color: var(--on-accent);
     font-size: 80px;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -160,7 +160,7 @@
 .profile-info h1 {
     font-size: 36px;
     margin-bottom: 10px;
-    color: #222;
+    color: var(--text);
     position: relative;
 }
 .profile-info h1::after {
@@ -170,8 +170,8 @@
     bottom: -6px;
     width: 70px;
     height: 4px;
-    background: -webkit-linear-gradient(left, #ff1a62, #ffa023);
-    background: linear-gradient(90deg, #ff1a62, #ffa023);
+    background: -webkit-linear-gradient(left, var(--accent), var(--accent-hover));
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     border-radius: 3px;
     -webkit-transition: width 0.4s ease;
     transition: width 0.4s ease;
@@ -187,7 +187,7 @@
     align-items: center;
     gap: 12px;
     font-size: 14px;
-    color: #555;
+    color: var(--text-secondary);
     margin-bottom: 25px;
 }
 .profile-links i,
@@ -195,15 +195,15 @@
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
 }
-.profile-links i { font-size: 20px; color: #ff1a62; }
+.profile-links i { font-size: 20px; color: var(--accent); }
 .profile-links a {
-    color: #ff1a62;
+    color: var(--accent);
     text-decoration: none;
     font-weight: 500;
 }
 .profile-links a:hover,
 .profile-links i:hover {
-    color: #ffa023;
+    color: var(--accent-hover);
     -webkit-transform: scale(1.05);
     transform: scale(1.05);
 }
@@ -236,8 +236,8 @@
     height: 3px;
     bottom: -4px;
     left: 0;
-    background: -webkit-linear-gradient(left, #ff1a62, #ffa023);
-    background: linear-gradient(90deg, #ff1a62, #ffa023);
+    background: -webkit-linear-gradient(left, var(--accent), var(--accent-hover));
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     -webkit-transition: width 0.3s ease;
     transition: width 0.3s ease;
 }
@@ -245,9 +245,9 @@
 .profile-stats .number {
     font-weight: 700;
     font-size: 28px;
-    color: #222;
+    color: var(--text);
 }
-.profile-stats .label { font-size: 14px; color: #666; }
+.profile-stats .label { font-size: 14px; color: var(--text-muted); }
 .profile-stats a:visited,
 .profile-stats a { color: inherit; text-decoration: none; }
 
@@ -273,7 +273,7 @@
 .profile-content h2 {
     font-size: 28px;
     margin: 40px 0 20px;
-    color: #222;
+    color: var(--text);
 }
 
 .posts-grid {
@@ -303,12 +303,12 @@
 }
 
 .post-card {
-    background: rgba(255,255,255,0.9);
+    background: var(--surface);
     border-radius: 20px;
     padding: 22px;
     -webkit-backdrop-filter: blur(12px); /* Safari */
     backdrop-filter: blur(12px);
-    box-shadow: 0 15px 35px rgba(244,23,23,0.12);
+    box-shadow: 0 15px 35px var(--shadow-color);
     -webkit-transition: -webkit-all 0s linear,transform 0.8s ease-out;
     transition: all 0s linear,transform 0.8s ease-out;
     cursor: pointer;
@@ -323,8 +323,8 @@
     position: absolute;
     inset: 0; /* fallback below for older browsers */
     top: 0; right: 0; bottom: 0; left: 0;
-    background: -webkit-linear-gradient(45deg, #ff1a62, #f41717, #ffa023);
-    background: linear-gradient(45deg, #ff1a62, #f41717, #ffa023);
+    background: -webkit-linear-gradient(45deg, var(--accent), var(--accent), var(--accent-hover));
+    background: linear-gradient(45deg, var(--accent), var(--accent), var(--accent-hover));
     opacity: 0;
     -webkit-transition: opacity 0.4s ease;
     transition: opacity 0.4s ease;
@@ -332,25 +332,25 @@
 }
 .post-card:hover::before { opacity: 0.08; }
 .post-card:hover {
-    background-color: rgba(255,255,255,0.9);
-    box-shadow: 0 25px 60px rgba(244,23,23,0.25);
+    background-color: var(--surface);
+    box-shadow: 0 25px 60px var(--shadow-color);
 }
 
 .post-card h3,
 .post-card p,
 .post-card .post-date,
 .post-card button { position: relative; z-index: 1; }
-.post-card p { font-size: 14px; line-height: 1.6; color: #444; }
-.post-card .post-date { font-size: 12px; color: #777; margin-top: 20px; display: block; }
+.post-card p { font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+.post-card .post-date { font-size: 12px; color: var(--text-muted); margin-top: 20px; display: block; }
 
 .empty-state {
     text-align: center;
     font-size: 18px;
-    color: #666;
+    color: var(--text-muted);
     padding: 60px 20px;
     border-radius: 14px;
-    background: rgba(255,255,255,0.95);
-    border: 1px solid rgba(255,26,98,0.15);
+    background: var(--surface);
+    border: 1px solid var(--accent-border);
 }
 
 /* ============================= */
@@ -360,7 +360,7 @@
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0; /* inset fallback */
     inset: 0;
-    background: rgba(0,0,0,0.2);
+    background: var(--border-strong);
     -webkit-backdrop-filter: blur(12px); /* Safari */
     backdrop-filter: blur(12px);
     display: -webkit-box;
@@ -381,7 +381,7 @@
     max-width: 560px;
     padding: 45px;
     border-radius: 22px;
-    background: rgba(255,255,255,0.9);
+    background: var(--surface);
     -webkit-animation: popIn 0.25s ease;
     animation: popIn 0.25s ease;
     position: relative;
@@ -405,14 +405,14 @@
     margin-bottom: 30px;
     font-size: 24px;
     font-weight: 600;
-    background: -webkit-linear-gradient(left, #ff1a62, #ffa023);
-    background: linear-gradient(90deg, #ff1a62, #ffa023);
+    background: -webkit-linear-gradient(left, var(--accent), var(--accent-hover));
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     /* Standard property must come AFTER the prefixed one */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     /* Fallback color for browsers that support neither */
-    color: #ff1a62;
+    color: var(--accent);
 }
 
 #new-post-form {
@@ -431,8 +431,8 @@
     width: 100%;
     padding: 16px 18px;
     border-radius: 16px;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: #fafafa;
+    border: 1px solid var(--border);
+    background: var(--surface-inset);
     font-size: 14px;
     -webkit-transition: all 0.25s ease;
     transition: all 0.25s ease;
@@ -441,9 +441,9 @@
 #new-post-form input:focus,
 #new-post-form textarea:focus,
 #new-post-form select:focus {
-    border-color: #ff1a62;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(255,26,98,0.12);
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px var(--accent-soft);
     outline: none;
 }
 #new-post-form textarea {
@@ -456,7 +456,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background: #fafafa url('data:image/svg+xml;utf8,<svg fill="%23666" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 16px center;
+    background: var(--surface-inset) url('data:image/svg+xml;utf8,<svg fill="%23666" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 16px center;
     background-size: 12px 12px;
     padding-right: 40px;
     cursor: pointer;
@@ -499,8 +499,8 @@
     flex: 0 0 60%;
     height: 180px;
     border-radius: 16px;
-    border: 1px dashed rgba(0,0,0,0.2);
-    background: #fafafa;
+    border: 1px dashed var(--border-strong);
+    background: var(--surface-inset);
     cursor: pointer;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -516,9 +516,9 @@
     -webkit-transition: all 0.25s ease;
     transition: all 0.25s ease;
 }
-.image-box:hover { border-color: #ff1a62; }
+.image-box:hover { border-color: var(--accent); }
 .image-box.has-image {
-    border: 2px solid #ff1a62;
+    border: 2px solid var(--accent);
     color: transparent;
 }
 
@@ -527,8 +527,8 @@
     -ms-flex: 0 0 40%;
     flex: 0 0 40%;
     border-radius: 16px;
-    border: 2px solid #ff1a62;
-    color: #ff1a62;
+    border: 2px solid var(--accent);
+    color: var(--accent);
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -544,9 +544,9 @@
     transition: all 0.25s ease;
 }
 .image-clear:hover {
-    background: -webkit-linear-gradient(45deg, #ff1a62, #ffa023);
-    background: linear-gradient(45deg, #ff1a62, #ffa023);
-    color: white;
+    background: -webkit-linear-gradient(45deg, var(--accent), var(--accent-hover));
+    background: linear-gradient(45deg, var(--accent), var(--accent-hover));
+    color: var(--on-accent);
 }
 
 .upload-btn {
@@ -555,8 +555,8 @@
     -ms-flex: 0 0 40%;
     flex: 0 0 40%;
     border-radius: 16px;
-    border: 2px solid #ff1a62;
-    color: #ff1a62;
+    border: 2px solid var(--accent);
+    color: var(--accent);
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -575,9 +575,9 @@
     text-decoration: none;
 }
 .upload-btn:hover {
-    background: -webkit-linear-gradient(45deg, #ff1a62, #ffa023);
-    background: linear-gradient(45deg, #ff1a62, #ffa023);
-    color: white;
+    background: -webkit-linear-gradient(45deg, var(--accent), var(--accent-hover));
+    background: linear-gradient(45deg, var(--accent), var(--accent-hover));
+    color: var(--on-accent);
 }
 
 /* Status text inside upload button — flattened from nested rule (SCSS-only syntax) */
@@ -588,12 +588,12 @@
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
     font-size: 16px;
-    color: #ff1a62;
+    color: var(--accent);
     text-align: center;
     pointer-events: none;
 }
 .upload-btn:hover #markdown-image-status {
-    color: white;
+    color: var(--on-accent);
 }
 
 /* ============================= */
@@ -660,8 +660,8 @@
 }
 
 .like-btn-heart i {
-    background: -webkit-linear-gradient(left, #ff1a62, #ffa023);
-    background: linear-gradient(90deg, #ff1a62, #ffa023);
+    background: -webkit-linear-gradient(left, var(--accent), var(--accent-hover));
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -671,7 +671,7 @@
 
 .like-btn-heart span {
     font-size: 16px;
-    color: #ff1a62;
+    color: var(--accent);
     font-weight: 600;
 }
 
@@ -710,26 +710,26 @@
     border: none;
     cursor: pointer;
     padding: 4px;
-    color: #444;
+    color: var(--text-secondary);
     -webkit-transition: -webkit-transform 0.2s ease, color 0.2s ease;
     transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .comment-btn i {
-    color: #ff1a62;
+    color: var(--accent);
     font-size: 24px;
 }
 
 .comment-btn span {
     font-size: 16px;
     font-weight: 600;
-    color: #ff1a62;
+    color: var(--accent);
 }
 
 .comment-btn:hover i {
     -webkit-transform: scale(1.2);
     transform: scale(1.2);
-    color: #ffa023;
+    color: var(--accent-hover);
 }
 
 /* ============================= */
@@ -774,8 +774,8 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: -webkit-linear-gradient(315deg, #ff1a62, #ffa023);
-    background: linear-gradient(135deg, #ff1a62, #ffa023);
+    background: -webkit-linear-gradient(315deg, var(--accent), var(--accent-hover));
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -785,14 +785,14 @@
     -webkit-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
-    color: white;
+    color: var(--on-accent);
     font-size: 16px;
 }
 
 .post-author-name {
     font-weight: 600;
     font-size: 14px;
-    color: #222;
+    color: var(--text);
 }
 
 .post-title-row {
@@ -803,7 +803,7 @@
     font-size: 17px;
     font-weight: 600;
     margin: 0;
-    color: #333;
+    color: var(--text);
 }
 
 .post-content-image {
@@ -837,7 +837,7 @@ figcaption {
     background: transparent;
     border: none;
     font-size: 22px;
-    color: #ff1a62;
+    color: var(--accent);
     cursor: pointer;
     padding: 4px;
     line-height: 1;
@@ -848,7 +848,7 @@ figcaption {
 .options-btn:hover {
     -webkit-transform: scale(1.2);
     transform: scale(1.2);
-    color: #ffa023;
+    color: var(--accent-hover);
 }
 
 .post-options-menu {
@@ -856,12 +856,12 @@ figcaption {
     bottom: 100%;
     right: 0;
     margin-bottom: 8px;
-    background: rgba(255,255,255,0.95);
+    background: var(--surface);
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(244,23,23,0.18);
+    box-shadow: 0 10px 30px var(--shadow-color);
     -webkit-backdrop-filter: blur(10px); /* Safari */
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,26,98,0.15);
+    border: 1px solid var(--accent-border);
     min-width: 140px;
     overflow: hidden;
     z-index: 4;
@@ -877,7 +877,7 @@ figcaption {
     border: none;
     padding: 12px 16px;
     font-size: 15px;
-    color: #e63946;
+    color: var(--danger);
     cursor: pointer;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -891,7 +891,7 @@ figcaption {
 }
 
 .post-options-menu button:hover {
-    color: #ffa023;
+    color: var(--accent-hover);
     -webkit-transform: scale(1.05);
     transform: scale(1.05);
 }
@@ -902,7 +902,7 @@ figcaption {
 
 .menu-divider {
     border: none;
-    border-top: 1px solid rgba(0,0,0,0.08);
+    border-top: 1px solid var(--border);
     margin: 4px 0;
 }
 

@@ -1,63 +1,33 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const overlay = document.getElementById("glass-overlay");
-  const button = document.getElementById("toggle-torch");
-
-  let pulse = 0;
-  const baseRadius = 300;
-  const pulseSpeed = 0.04;
-  const pulseAmount = 40;
-
-  let mouseX = localStorage.getItem("torchX")
-    ? parseInt(localStorage.getItem("torchX"))
-    : window.innerWidth / 2;
-  let mouseY = localStorage.getItem("torchY")
-    ? parseInt(localStorage.getItem("torchY"))
-    : window.innerHeight / 2;
-
-  let animationId;
-  let isActive = localStorage.getItem("torchMode") === "on";
-
-  if (isActive) {
-    overlay.style.display = "block";
-    overlay.style.opacity = "1";
-    animate();
+// One real, persistent theme for every page, including forms and dialogs.
+document.addEventListener('DOMContentLoaded', () => {
+  const button = document.getElementById('toggle-torch');
+  if (!button) return;
+  function updateThemeButton() {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+    button.setAttribute('aria-label', label);
+    button.setAttribute('aria-pressed', String(dark));
+    button.title = label;
   }
-
-  document.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    localStorage.setItem("torchX", mouseX);
-    localStorage.setItem("torchY", mouseY);
+  updateThemeButton();
+  button.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('crimson-theme', theme); } catch (_) {}
+    updateThemeButton();
   });
 
-  function animate() {
-    const radius = baseRadius + Math.sin(pulse) * pulseAmount;
-    const softEdge = 0.5;
-    overlay.style.background = `
-      radial-gradient(
-        circle ${radius}px at ${mouseX}px ${mouseY}px,
-        transparent 0%,
-        rgba(0,0,0,0.6) ${softEdge * 100}%,
-        rgba(0,0,0,0.97) 100%
-      )
-    `;
-    pulse += pulseSpeed;
-    animationId = requestAnimationFrame(animate);
+  const path = window.location.pathname;
+  let activeId = 'stream';
+  if (path.startsWith('/authors/')) activeId = 'explore';
+  if (path.startsWith('/me/')) activeId = 'profile';
+  if (path.startsWith('/follow-requests/')) activeId = 'requests';
+  if (path.startsWith('/node-admin/')) activeId = 'admin-approvals';
+  if (path.startsWith('/posts/admin/')) activeId = 'admin-deleted';
+  if (path.startsWith('/nodes/')) activeId = 'nodes';
+  if (!['/login/', '/signup/', '/pending-approval/'].includes(path)) {
+    document.getElementById(activeId)?.setAttribute('aria-current', 'page');
   }
-
-  button.addEventListener("click", () => {
-    isActive = !isActive;
-    localStorage.setItem("torchMode", isActive ? "on" : "off");
-    if (isActive) {
-      overlay.style.display = "block";
-      overlay.style.opacity = "1";
-      animate();
-    } else {
-      overlay.style.opacity = "0";
-      cancelAnimationFrame(animationId);
-      setTimeout(() => overlay.style.display = "none", 500);
-    }
-  });
 });
 
 // ── MASONRY ──

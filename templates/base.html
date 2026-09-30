@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Crimson{% endblock %}</title>
+    <script src="https://kit.fontawesome.com/8e7e7749b6.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="logo">
+  <a href="/posts/stream">Crimson</a>
+</div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+
+        <nav class="sidebar-links">
+
+            <a href="/posts/stream" id="stream">
+                <i class="fa-regular fa-house"></i>
+                <span>Home</span>
+            </a>
+
+            <a href="{% url 'authors-list' %}" id="explore">
+                <i class="fa-regular fa-compass"></i>
+                <span>Explore</span>
+            </a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'my-profile' %}" id="profile">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Profile</span>
+                </a>
+
+                <a href="{% url 'follow-requests' %}" id="requests">
+                    <i class="fa-regular fa-bell"></i>
+                    <span>Requests</span>
+                </a>
+                {% if user.is_staff %}
+
+                <a href="{% url 'pending-authors-admin' %}" id="admin-approvals">
+                    <i class="fa-solid fa-user-clock"></i>
+                    <span>Pending Authors</span>
+                </a>
+
+                <a href="{% url 'deleted_entries' %}" id="admin-deleted">
+                    <i class="fa-regular fa-trash-can"></i>
+                    <span>Deleted</span>
+                </a>
+
+                <a href="{% url 'nodes-list' %}" id="nodes">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>Nodes</span>
+                </a>
+
+                {% endif %}
+
+                <form method="POST" action="{% url 'logout' %}" style="display: contents;" id="logout">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-link"
+                            onclick="return confirm('Logging Out\n\nIt will be lonely without you… come back soon! ¯\\_(ツ)_/¯');">
+                        <i class="fa-regular fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Login</span>
+                </a>
+            {% endif %}
+
+        </nav>
+    </aside>
+
+    <!-- Content Area -->
+<div class="content-wrapper">
+    <div class="mirror-container">
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+        <footer class="footer">
+            <span>&copy; {{ now|date:"Y" }} Crimson. All rights reserved.</span>
+        </footer>
+    </div>
+
+</div>
+
+{% block extra_js %}
+{% endblock %}
+<div id="glass-overlay"></div>
+<span id="toggle-torch"><i class="fa-regular fa-moon"></i></span>
+</body>
+    <script src="{% static 'js/script.js' %}"></script>
+{%if request.user.is_authenticated%}
+<script>
+const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+
+if (!isFirefox) {
+
+document.addEventListener("DOMContentLoaded", () => {
+    const main      = document.querySelector('.main-content');
+    const container = document.querySelector('.mirror-container');
+    if (!main || !container) return;
+
+    function createMirror(side) {
+        const mirror = main.cloneNode(true);
+        mirror.classList.remove('main-content');
+        mirror.classList.add(side);
+        mirror.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        mirror.removeAttribute('id');
+        return mirror;
+    }
+
+    const mirrorLeft  = createMirror('mirror-left');
+    const mirrorRight = createMirror('mirror-right');
+    document.body.appendChild(mirrorLeft);
+    document.body.appendChild(mirrorRight);
+
+    // scale based on viewport width
+    function getConstants() {
+        const w = window.innerWidth;
+        if (w > 1400) return { TX: 65, RY: 75 };
+        if (w > 1024) return { TX: 55, RY: 65 };
+        if (w > 900)  return { TX: 45, RY: 55 };
+        return { TX: 44, RY: 54 };
+    }
+
+    const RR           = 2;
+    const PARALLAX     = 0.005;
+    const PARALLAX_MAX = 0.1;
+    const BLUR         = 10;
+    const LERP         = 0.008;
+    const CYCLE        = 8000;
+
+    let current = window.scrollY;
+    let target  = window.scrollY;
+    let rafId   = null;
+
+    function tick() {
+        current += (target - current) * LERP;
+
+        const { TX, RY } = getConstants();
+        const wave     = Math.sin((current / CYCLE) * Math.PI * 2);
+        const rotate   = RY + wave * RR;
+        const parallax = Math.min(current * PARALLAX, PARALLAX_MAX);
+        mirrorLeft.style.transform  = `perspective(3000px) rotateY(${rotate}deg) translateX(calc(-${TX}% + ${parallax}px)) scaleX(-1)`;
+        mirrorRight.style.transform = `perspective(3000px) rotateY(-${rotate}deg) translateX(calc(${TX}%  - ${parallax}px)) scaleX(-1)`;
+        mirrorLeft.style.filter     = `blur(${BLUR}px)`;
+        mirrorRight.style.filter    = `blur(${BLUR}px)`;
+
+        rafId = Math.abs(current - target) < 0.3 ? null : requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('scroll', () => {
+        target = window.scrollY;
+        if (!rafId) rafId = requestAnimationFrame(tick);
+    }, { passive: true });
+
+    // re-run tick on resize so constants update immediately
+    window.addEventListener('resize', () => {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+    });
+
+    tick();
+});
+}
+let scrambled = false;
+
+document.getElementById('toggle-grid')?.addEventListener('click', () => {
+    const cards = document.querySelectorAll('.posts-grid .post-card');
+
+    if (scrambled) {
+        cards.forEach(card => {
+            card.style.transform = '';
+            card.style.zIndex    = '';
+        });
+        scrambled = false;
+        applyMasonryRowWise();
+    } else {
+        cards.forEach(card => {
+            const rotation = (Math.random() * 20) - 10;
+            const scale = Math.random() * 4.1 + 0.9; // 0.9 to 5
+            card.style.transform = `rotate(${rotation}deg) scale(${1.2})`;
+            card.style.zIndex    = '10';
+        });
+        scrambled = true;
+    }
+});
+(function () {
+  const CYCLE_DURATION = 8000;  // total loop duration ms
+  const BEAM_WIDTH     = 0.45;
+  const STRIDE         = 3;
+
+  const cards = Array.from(document.querySelectorAll('.posts-grid .post-card'));
+  if (!cards.length) return;
+
+  function applyBeam(card, progress) {
+    const center = -BEAM_WIDTH / 2 + progress * (1 + BEAM_WIDTH);
+    const left   = (center - BEAM_WIDTH / 2) * 100;
+    const right  = (center + BEAM_WIDTH / 2) * 100;
+
+    card.style.background = `linear-gradient(
+      to right,
+      #ffffffCC ${left}%,
+      #ffffff ${(left + right) / 1.75}%,
+      #ffffffCC ${right}%
+    )`;
+  }
+
+  function tick(timestamp) {
+    const t = (timestamp % CYCLE_DURATION) / CYCLE_DURATION; // 0→1 looping
+
+    cards.forEach((card, i) => {
+      const groupOffset = (i % STRIDE) * 0.5;             // 0, 0.333, 0.666
+      const progress    = (t - groupOffset + 1) % 1;         // each group phase-shifted
+      applyBeam(card, progress);
+    });
+
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+})();
+</script>
+{%endif%}
+</html>

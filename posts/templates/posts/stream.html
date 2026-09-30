@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load interaction_tags %}
+{% load markdown_extras %}
+
+{% block title %}My Stream{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<span id="toggle-grid"><i class="fa-solid fa-table"></i></i></span>
+<div class="profile-container">
+    
+        <h1>The Sacred Timeline...</h1>
+
+    {% if posts %}
+    <div class="posts-grid">
+        {% for post in posts %}
+        {% with entry_author=post.get_author %}
+        <div class="post-card" onclick="window.location.href='{% url 'entry_detail' post.id %}'">
+
+            <!-- POST HEADER -->
+            <div class="post-header">
+
+                <!-- Top row: avatar + author name -->
+                <div class="post-header-top">
+                    <div class="post-avatar-wrapper">
+                        
+                        {% if entry_author and entry_author.profileImageUrl %}
+                            <img src="{{ entry_author.profileImageUrl }}" alt="Profile Image" class="post-avatar">
+                        {% elif entry_author.profileImage %}
+                            <img src="{{ entry_author.profileImage.url }}" alt="Profile Image" class="post-avatar">
+                        {% else %}
+                            <div class="post-avatar-placeholder">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+{% with entry_author=post.get_author %}
+    <a class="post-author-name author-link" 
+       href="{% if entry_author %}{% url 'author-profile' entry_author.id %}{% else %}#{% endif %}">
+       {% if entry_author %}
+           {{ entry_author.displayName }}
+       {% elif post.author.user %}
+           {{ post.author.user.username }}
+       {% else %}
+           Unknown Author
+       {% endif %}
+    </a>
+{% endwith %}
+                </div>
+
+                <hr class="menu-divider">
+                <!-- Title row -->
+                <div class="post-title-row">
+                    <h3 class="post-title">{{ post.title }}</h3>
+                </div>
+
+            </div>
+            
+
+            <!-- POST CONTENT -->
+            {% if post.content_type == "image" %}
+                {% if post.image %}
+                    <figure class="stream-post-media">
+                        <img src="{{ post.image.url }}" class="post-content-image">
+                        {% if post.content %}
+                            <figcaption>{{ post.content }}</figcaption>
+                        {% endif %}
+                    </figure>
+                {% elif post.image_url %}
+                    <figure class="stream-post-media">
+                        <img src="{{ post.image_url }}" class="post-content-image">
+                        {% if post.content %}
+                            <figcaption>{{ post.content }}</figcaption>
+                        {% endif %}
+                    </figure>
+                {% endif %}
+
+            {% elif post.content_type == "text/markdown" %}
+                <section class="stream-post-body">
+                    {{ post.content | render_markdown }}
+                </section>
+
+            {% else %}
+                <p class="stream-post-body">{{ post.content }}</p>
+            {% endif %}
+
+            <!-- POST DATE -->
+            <span class="post-date">
+                Published on {{ post.published_at|date:"M d, Y H:i" }}
+        {%if current_user_author.host ==  entry_author.host%}
+        {% if post.is_edited %}<br>(edited){% endif %}
+        {%endif%}
+            </span>
+            <!-- POST INTERACTIONS -->
+            <div class="post-interactions">
+                <!-- COMMENT BUTTON -->
+                <button class="comment-btn">
+                    <i class="fa-regular fa-comment"></i>
+                    <span class="comment-count">{{ post.comments.count }}</span>
+                </button>
+
+                <!-- LIKE BUTTON -->
+                {% user_has_liked post request.user as liked %}
+                <button id="like-btn-{{ post.id }}" class="like-btn-heart" onclick="event.stopPropagation(); toggleLike('entry', '{{ post.id }}')">
+                    <i class="fa{% if liked %}s{% else %}r{% endif %} fa-heart"></i>
+                    <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span>
+                </button>
+            </div>
+
+<!-- POST OPTIONS (three dots menu) -->
+{% if post.visibility != "DELETED" and post.author == request.user %}
+<div class="post-options">
+    <button class="options-btn" 
+            onclick="event.stopPropagation(); togglePostOptions('{{ post.id }}')">
+        <i class="fa-solid fa-ellipsis-v"></i>
+    </button>
+
+    <div id="post-options-menu-{{ post.id }}" class="post-options-menu hidden">
+        <button class="menu-edit-btn" type="button"
+        onclick="event.stopPropagation();
+        window.openEditPostDescription(
+            '{{ post.id }}',
+            `{{ post.content|escapejs }}`
+        );">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Post
+        </button>
+        <hr class="menu-divider">
+        <button class="menu-delete-btn" type="button"
+                onclick="event.stopPropagation();if (confirm('Are you sure you want to delete?\n\nThis cannot be undone >:(')) { 
+                        document.getElementById('delete-form-{{ post.id }}').submit(); 
+                        }">
+            <i class="fa-solid fa-trash"></i> Delete
+        </button>
+        <!-- Future options can go here, e.g. -->
+        <!-- <button class="menu-item">Edit Post</button> -->
+    </div>
+
+    <!-- Hidden form (keeps POST + CSRF, but triggered via JS) -->
+    <form id="delete-form-{{ post.id }}" method="POST" 
+          action="{% url 'delete_entry_ui' post.id %}" style="display:none;">
+        {% csrf_token %}
+    </form>
+</div>
+{% endif %}
+
+        </div>
+        {% endwith %}
+        {% endfor %}
+
+    </div>
+    {% else %}
+        <p class="empty-state">No posts yet.</p>
+    {% endif %}
+
+<!-- Edit Description Modal – only bio/description editable -->
+<div id="edit-description-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Did you make a Typo?</h2>
+    <form id="edit-description-form">
+    {% csrf_token %}
+<input type="hidden" name="post_id">
+
+<textarea name="content" id="edit-description" placeholder="Update your post..."></textarea>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" id="close-edit-description" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+<style>
+    #stream i{
+        transform: scale(1.5);
+        font-weight: 800;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/interactions.js' %}"></script>
+{% endblock %}

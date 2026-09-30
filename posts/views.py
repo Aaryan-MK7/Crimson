@@ -4,6 +4,7 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.views import View
 from .models import Entry, HostedImage
 from accounts.models import Author, Follow
@@ -483,34 +484,34 @@ def get_stream_entries_for_user(user):
 
 @approved_author_required
 def stream(request):
-    print("\n=== ENTER stream ===")
-
-    import os
-    import cloudinary
-    import socialdistribution.settings as settings
-
-    print("User:", request.user)
-    print("Authenticated:", request.user.is_authenticated)
-
-    print("=== Cloudinary Config Check ===")
-    print("CLOUDINARY_CLOUD_NAME :", os.environ.get('CLOUDINARY_CLOUD_NAME'))
-    print("CLOUDINARY_API_KEY    :", os.environ.get('CLOUDINARY_API_KEY'))
-    print("CLOUDINARY_API_SECRET :", os.environ.get('CLOUDINARY_API_SECRET'))
-    print("DEBUG                 :", settings.DEBUG)
-    print("DEFAULT_FILE_STORAGE  :", getattr(settings, 'DEFAULT_FILE_STORAGE', 'NOT SET'))
-    print("Cloudinary config     :", cloudinary.config().__dict__)
-
-    try:
-        posts = get_stream_entries_for_user(request.user)
-        print("Posts fetched:", posts.count())
-    except Exception as e:
-        print("ERROR in get_stream_entries_for_user:", e)
-        raise
-
+    # Filter the existing visibility-aware feed, never the unrestricted entry table.
+    posts = get_stream_entries_for_user(request.user)
     current_user_author = request.user.author if request.user.is_authenticated else None
-    print("=== EXIT stream ===\n")
+    feed = request.GET.get('feed', 'latest')
+    if feed not in ('latest', 'following', 'media'):
+        feed = 'latest'
+    query = request.GET.get('q', '').strip()[:200]
+    followed = Follow.objects.filter(follower=current_user_author)
+    if feed == 'following':
+        posts = posts.filter(
+            Q(author__author__in=followed.values('followee_id')) |
+            Q(remote_author__in=followed.values('followee_id'))
+        )
+    elif feed == 'media':
+        posts = posts.filter(content_type='image')
+    if query:
+        posts = posts.filter(Q(title__icontains=query) | Q(content__icontains=query))
+    posts = posts.select_related('author__author', 'remote_author').prefetch_related('comments', 'likes')
+    page = Paginator(posts, 20).get_page(request.GET.get('page'))
+    suggestions = Author.objects.filter(is_approved=True).exclude(
+        id__in=followed.values('followee_id')
+    ).exclude(id=current_user_author.id).select_related('user')[:3]
     return render(request, 'posts/stream.html', {
-        'posts': posts,                                       
+        'posts': page.object_list,
+        'page_obj': page,
+        'active_feed': feed,
+        'search_query': query,
+        'suggested_authors': suggestions,
         'current_user_author': current_user_author,
     })
 

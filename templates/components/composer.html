@@ -1,0 +1,22 @@
+<dialog class="compose-dialog" id="compose-dialog" aria-labelledby="compose-title" data-user-id="{{ user.pk }}">
+    <form id="compose-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="dialog-heading"><div><span class="eyebrow">A THOUGHT WORTH SHARING</span><h2 id="compose-title">Create a post</h2></div><button type="button" class="icon-button" data-close-compose aria-label="Close composer">{% include 'components/icon.html' with name='close' %}</button></div>
+        <div class="composer-identity">{% include 'components/avatar.html' with author=user.author %}<div><strong>{{ user.author.displayName }}</strong><span>Posting to your community</span></div></div>
+        <label class="sr-only" for="compose-title-input">Title (optional)</label>
+        <input id="compose-title-input" name="title" class="compose-title-input" placeholder="Give it a title (optional)" maxlength="200">
+        <label class="sr-only" for="compose-content">Post content</label>
+        <textarea id="compose-content" name="content" placeholder="What's on your mind?" rows="5"></textarea>
+        <div class="compose-settings">
+            <label>{% include 'components/icon.html' with name='globe' %}<span class="sr-only">Who can see this?</span><select name="visibility" aria-label="Post visibility"><option value="PUBLIC">Everyone</option><option value="UNLISTED">Unlisted</option><option value="FRIENDS">Friends only</option></select></label>
+            <label><span class="sr-only">Post format</span><select name="contentType" aria-label="Post format"><option value="text/plain">Plain text</option><option value="text/markdown">Markdown</option><option value="image">Image + caption</option></select></label>
+        </div>
+        <div class="compose-image" hidden>
+            <label class="image-picker" for="compose-image">{% include 'components/icon.html' with name='image' %}<span>Choose an image</span><input type="file" name="image" id="compose-image" accept="image/*"></label>
+            <img id="compose-preview" alt="Selected image preview" hidden>
+        </div>
+        <p class="compose-error" role="alert" hidden></p>
+        <div class="compose-footer"><span id="draft-status">Text drafts are saved on this device.</span><button class="btn btn-primary" type="submit">Publish {% include 'components/icon.html' with name='arrow' %}</button></div>
+        <p class="compose-hint">⌘ / Ctrl + Enter to publish · Esc to close</p>
+    </form>
+</dialog>

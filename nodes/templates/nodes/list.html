@@ -19,8 +19,8 @@
                 
                 <div class="profile-main">
                     
-                    <div class="node-icon-wrapper profile-avatar-wrapper" style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background: #fff;">
-                        <i class="fa-solid fa-server" style="font-size: 40px; color: #ff1a62;"></i>
+                    <div class="node-icon-wrapper profile-avatar-wrapper" style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background: var(--surface);">
+                        <i class="fa-solid fa-server" style="font-size: 40px; color: var(--accent);"></i>
                     </div>
 
                     <div class="profile-info">
@@ -33,11 +33,11 @@
                         
                         <p class="profile-links">
                             {% if node.is_active %}
-                                <i class="fa-solid fa-circle-check" style="color: #28a745;"></i>
-                                <span style="font-weight: 600; color: #28a745;">Active</span>
+                                <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+                                <span style="font-weight: 600; color: var(--success);">Active</span>
                             {% else %}
-                                <i class="fa-solid fa-circle-xmark" style="color: #dc3545;"></i>
-                                <span style="font-weight: 600; color: #dc3545;">Disabled</span>
+                                <i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>
+                                <span style="font-weight: 600; color: var(--danger);">Disabled</span>
                             {% endif %}
                         </p>
                         
@@ -69,7 +69,7 @@
         {% endfor %}
     {% else %}
         <div class="empty-state">
-            <i class="fa-solid fa-network-wired" style="font-size: 64px; color: #ccc; margin-bottom: 20px;"></i><br>
+            <i class="fa-solid fa-network-wired" style="font-size: 64px; color: var(--border-strong); margin-bottom: 20px;"></i><br>
             No connected nodes found.<br><br>
             Add a node to start sharing with other servers.
         </div>
@@ -89,11 +89,11 @@
 .empty-state {
     text-align: center;
     font-size: 18px;
-    color: #666;
+    color: var(--text-muted);
     padding: 80px 20px;
     border-radius: 20px;
-    background: rgba(255,255,255,0.95);
-    border: 1px solid rgba(255,26,98,0.15);
+    background: var(--surface);
+    border: 1px solid var(--accent-border);
 }
 
 .profile-hero {
@@ -112,22 +112,22 @@
 }
 
 .btn-enable {
-    background: linear-gradient(45deg, #28a745, #218838);
-    color: white;
+    background: linear-gradient(45deg, var(--success), var(--success));
+    color: var(--on-accent);
     border: none;
     padding: 12px 30px;
     border-radius: 16px;
 }
 .btn-disable {
-    background: #fff;
-    color: #ff9100;
-    border: 2px solid #ff9100;
+    background: var(--surface);
+    color: var(--warning);
+    border: 2px solid var(--warning);
     padding: 12px 30px;
     border-radius: 16px;
 }
 .btn-danger-custom {
-    background: linear-gradient(45deg, #dc3545, #c82333);
-    color: white;
+    background: linear-gradient(45deg, var(--danger), var(--danger));
+    color: var(--on-accent);
     border: none;
     padding: 12px 20px;
     border-radius: 16px;

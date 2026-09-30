@@ -1,0 +1,34 @@
+{% load interaction_tags markdown_extras %}
+{% with entry_author=post.get_author %}
+<article class="feed-post">
+    <div class="feed-post-top">
+        <a class="post-person" href="{% if entry_author %}{% url 'author-profile' entry_author.id %}{% else %}#{% endif %}">
+            {% include 'components/avatar.html' with author=entry_author %}
+            <span><strong>{{ entry_author.displayName|default:"Unknown author" }}</strong><small>{% if entry_author.user %}@{{ entry_author.user.username }}{% else %}{{ entry_author.host }}{% endif %} <span aria-hidden="true">·</span> {{ post.published_at|timesince }} ago</small></span>
+        </a>
+        <div class="feed-post-meta"><span class="visibility-label" title="{{ post.get_visibility_display }}">{% if post.visibility == 'FRIENDS' %}Friends{% elif post.visibility == 'UNLISTED' %}Unlisted{% else %}{% include 'components/icon.html' with name='globe' %}{% endif %}</span>
+        {% if post.author == request.user %}
+        <details class="feed-post-options"><summary aria-label="Post options">···</summary><div>
+            <button type="button" data-edit-post="{{ post.id }}" data-edit-content="{{ post.content }}">Edit post</button>
+            <form method="post" action="{% url 'delete_entry_ui' post.id %}" data-confirm-delete>{% csrf_token %}<button type="submit" class="danger-text">Delete post</button></form>
+        </div></details>
+        {% endif %}
+        </div>
+    </div>
+    {% if post.title %}<a class="post-title-link" href="{% url 'entry_detail' post.id %}"><h2>{{ post.title }}</h2></a>{% endif %}
+    <div class="feed-post-content">
+        {% if post.content_type == 'text/markdown' %}{{ post.content|render_markdown }}{% else %}<p>{{ post.content|linebreaksbr }}</p>{% endif %}
+        {% if post.content_type == 'image' %}
+            {% if post.image %}<a href="{% url 'entry_detail' post.id %}"><img class="feed-media" src="{{ post.image.url }}" alt="{{ post.title|default:'Image post' }}" loading="lazy"></a>
+            {% elif post.image_url %}<a href="{% url 'entry_detail' post.id %}"><img class="feed-media" src="{{ post.image_url }}" alt="{{ post.title|default:'Image post' }}" loading="lazy"></a>{% endif %}
+        {% endif %}
+    </div>
+    <div class="feed-post-actions">
+        <a href="{% url 'entry_detail' post.id %}" class="post-action" aria-label="{{ post.comments.count }} comments">{% include 'components/icon.html' with name='message' %}<span>{{ post.comments.count }}</span></a>
+        {% user_has_liked post request.user as liked %}
+        <button type="button" class="post-action like-btn-heart" id="like-btn-{{ post.id }}" aria-label="Like post" aria-pressed="{{ liked|yesno:'true,false' }}" onclick="toggleLike('entry','{{ post.id }}')"><i class="fa{% if liked %}s{% else %}r{% endif %} fa-heart" aria-hidden="true"></i><span id="like-count-{{ post.id }}">{{ post.likes.count }}</span></button>
+        <a href="{% url 'entry_detail' post.id %}" class="post-action conversation-link">Join the conversation {% include 'components/icon.html' with name='arrow' %}</a>
+        {% if post.visibility == 'PUBLIC' or post.visibility == 'UNLISTED' %}<button type="button" class="post-action share-post" data-copy-link="{% url 'entry_detail' post.id %}" aria-label="Copy link to post" title="Copy link">{% include 'components/icon.html' with name='share' %}</button>{% endif %}
+    </div>
+</article>
+{% endwith %}

@@ -1,173 +1,21 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Explore Authors{% endblock %}
-
+{% block title %}Explore · Crimson{% endblock %}
 {% block content %}
-
-<div class="authors-wrapper">
-    <h1>
-        {% if page_title %}
-        {{ page_title }}
-        <br><br>
-        <a href="{% url 'home' %}" onclick="event.preventDefault(); history.back();"  class="btn btn-secondary">
-            <i class="fa-solid fa-hand-point-left"></i> Back
-        </a>
-        <br>
-        {% else %}
-        Explore
-        {% endif %}</h1>
-    
-    {% if current_user_author %}
-    <div class="remote-follow-form" style="margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.95); border-radius: 16px; border: 1px solid rgba(255,26,98,0.15);">
-        <h3 style="margin: 0 0 12px 0; color: #333;">
-            <i class="fa-solid fa-globe"></i> Follow Remote Author
-        </h3>
-        <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">
-            Enter the full author URL (FQID) to follow someone on another node.
-        </p>
-        <form method="POST" action="{% url 'follow-remote' %}" style="display: flex; gap: 10px; flex-wrap: wrap;">
-            {% csrf_token %}
-            <input type="url" name="remote_author_fqid" placeholder="https://other-node.com/api/authors/123/" 
-                   style="flex: 1; min-width: 250px; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 14px;" 
-                   required>
-            <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
-                <i class="fa-solid fa-paper-plane"></i> Send Request
-            </button>
-        </form>
-    </div>
-    {% endif %}
-    
-    {% if messages %}
-    <div class="messages" style="margin-bottom: 20px;">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" style="padding: 14px 20px; border-radius: 12px; margin-bottom: 10px; {% if message.tags == 'error' %}background: #fee; color: #c00; border: 1px solid #fcc;{% elif message.tags == 'success' %}background: #efe; color: #060; border: 1px solid #cfc;{% elif message.tags == 'info' %}background: #eef; color: #006; border: 1px solid #ccf;{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% if authors %}
-        {% for author in authors %}
-            <div class="profile-hero author-card" onclick="window.location.href='{% url 'author-profile' author_id=author.id %}'" style="cursor:pointer;">
-
-                <!-- LEFT SIDE (60%) -->
-                <div class="profile-main">
-
-                    <div class="profile-avatar-wrapper">
-  
-                        {% if author.profileImageUrl %}
-                            <img src="{{ author.profileImageUrl }}" alt="Profile Image" class="profile-avatar">
-                        {% elif author.profileImage %}
-                            <img src="{{ author.profileImage.url }}" alt="Profile Image" class="profile-avatar">
-                        {% else %}
-                            <div class="profile-avatar-placeholder">
-                                {{ author.displayName|make_list|first }}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="profile-info">
-                        <h2 class="author-name">{{ author.displayName }}</h2>
-
-                <!-- Optional GitHub link if they added it -->
-                {% if author.github %}
-                <p class="profile-links">
-                    <i class="fa-brands fa-github"></i>
-                    <a href="{{ author.github }}" target="_blank" rel="noopener" onclick="event.stopPropagation();">
-                        {{ author.github|slice:"19:" }}
-                    </a>
-                </p>
-                {% endif %}
-                {% if author.web %}
-                <p class="profile-links">
-                    <i class="fa-solid fa-globe"></i>
-                    <a href="{{ author.web }}" target="_blank" rel="noopener" onclick="event.stopPropagation();">
-                        {{ author.web }}
-                    </a>
-                </p>
-                {% endif %}
-                        <div class="profile-actions">
-                            <!-- <a href="{% url 'author-profile' author_id=author.id %}"
-                               class="btn btn-primary">
-                               View Profile
-                            </a> -->
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- RIGHT SIDE (40%) -->
-                <div class="profile-description-side">
-                    <h3>About</h3>
-                    {% if author.description %}
-                        <p>{{ author.description|truncatewords:40 }}</p>
-                    {% else %}
-                        <p class="empty-desc">No description provided.</p>
-                    {% endif %}
-                </div>
-
-            </div>
-            <br><br>
-        {% endfor %}
-    {% else %}
-        <div class="empty-state">
-            No authors found.
-        </div>
-    {% endif %}
-
+<div class="explore-page">
+<header class="page-heading"><div><span class="eyebrow">A NEW PERSPECTIVE IS A FOLLOW AWAY</span><h1>{{ page_title|default:"Explore" }}<span class="heading-dot">.</span></h1><p>Find the people who make your feed feel like you.</p></div></header>
+{% if not page_title %}<form class="explore-search" method="get" role="search">{% include 'components/icon.html' with name='search' %}<input type="search" name="q" value="{{ search_query }}" placeholder="Find someone by name" aria-label="Search authors"><button type="submit" class="btn btn-secondary">Search</button></form>{% endif %}
+{% if messages %}<div class="messages">{% for message in messages %}<div class="alert alert-{{ message.tags }}" role="status">{{ message }}</div>{% endfor %}</div>{% endif %}
+<div class="people-grid">{% for author in authors %}
+<article class="person-card">
+    <div class="person-cover"></div><a class="person-avatar" href="{% url 'author-profile' author.id %}">{% include 'components/avatar.html' with author=author %}</a>
+    <span class="person-kind">{% if not author.is_approved %}Pending approval{% elif author.user %}Your node{% else %}Connected node{% endif %}</span>
+    <h2><a href="{% url 'author-profile' author.id %}">{{ author.displayName }}</a></h2>
+    <p>{{ author.description|default:"A new voice. A different perspective."|truncatewords:18 }}</p>
+    <a class="person-visit" href="{% url 'author-profile' author.id %}">Get to know {{ author.displayName|truncatechars:16 }} {% include 'components/icon.html' with name='arrow' %}</a>
+</article>
+{% empty %}<div class="feed-empty"><h2>No people found just yet.</h2><p>{% if search_query %}Try a different name.{% else %}People will appear here as they join and are approved.{% endif %}</p></div>{% endfor %}</div>
+{% if current_user_author %}
+<section class="remote-connect"><div class="empty-icon">{% include 'components/icon.html' with name='globe' %}</div><div><span class="eyebrow">GOOD CONVERSATIONS CROSS BORDERS</span><h2>Know someone on another node?</h2><p>Paste their author URL to send a follow request.</p><form method="post" action="{% url 'follow-remote' %}">{% csrf_token %}<label class="sr-only" for="remote-author">Remote author URL</label><input id="remote-author" type="url" name="remote_author_fqid" placeholder="https://their-node.com/api/authors/123/" required><button class="btn btn-primary" type="submit">Send request {% include 'components/icon.html' with name='arrow' %}</button></form></div></section>
+{% endif %}
 </div>
-
-<link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">
-<style>
-/* Only layout-specific overrides, everything else is in profile.css */
-
-h2{
-    font-size: 2em;
-}
-
-/* Wrapper spacing */
-.authors-wrapper {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-/* Empty state styling */
-.empty-state {
-    text-align: center;
-    font-size: 16px;
-    color: #666;
-    padding: 60px 20px;
-    border-radius: 14px;
-}
-
-#explore i{
-    transform: scale(1.5);
-    font-weight: 800;
-}
-
-.profile-hero {
-    animation: none!important;
-    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-    justify-content: space-between;
-}
-
-.profile-hero:hover {
-    transform: translateY(-4px) rotate(0.2deg) scale(1.01);
-}
-
-@media (max-width: 900px) {
-    .profile-main { 
-    flex: 0 0 90%;}
-    .profile-description-side {
-        display: none; 
-    }
-}
-.profile-main { 
-    flex: 0 0 35%;}
-.profile-description-side {
-    flex: 0 0 30%;
-}
-
-</style>
-
 {% endblock %}

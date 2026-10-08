@@ -18,6 +18,9 @@ SECRET_KEY=local-development-only
 NODE_BASE_URL=http://127.0.0.1:8000
 ALLOWED_HOSTS=127.0.0.1,localhost
 DATABASE_URL=sqlite:///db.sqlite3
+NODE_USERNAME=local-node
+NODE_PASSWORD=local-node-password
+CSRF_TRUSTED_ORIGINS=http://127.0.0.1:8000
 ```
 
 Prepare and run the node:
@@ -33,7 +36,7 @@ python manage.py runserver
 
 ```bash
 python manage.py check                 # Django configuration checks
-python manage.py test                  # application test suite
+python manage.py test accounts posts interactions nodes core
 python manage.py makemigrations        # generate schema changes after model edits
 python manage.py migrate               # apply schema changes
 python manage.py collectstatic --noinput
@@ -80,6 +83,8 @@ When testing friends-only entries, verify both directions: a permitted friend ca
 - Use a strong `SECRET_KEY`.
 - Set the public `NODE_BASE_URL`.
 - Configure `ALLOWED_HOSTS` and trusted origins.
+- Set a non-empty `NODE_PASSWORD`; production requests are rejected when the
+  local node password is missing.
 - Use PostgreSQL through `DATABASE_URL`.
 - Configure media storage for production uploads.
 - Run migrations and `collectstatic` during deployment.

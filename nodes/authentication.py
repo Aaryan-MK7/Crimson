@@ -92,7 +92,7 @@ def authenticate_remote_node(auth_header):
 
     # Second, check against this node's own credentials (from settings)
     local_username, local_password = get_node_credentials()
-    if username == local_username and password == local_password:
+    if local_password and username == local_username and password == local_password:
         user = LocalNodeUser()
         return (user, {'type': 'local_node'})
 

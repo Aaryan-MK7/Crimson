@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 import dj_database_url
 
@@ -25,18 +26,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+TESTING = "test" in sys.argv
+DEBUG = os.getenv("DEBUG", "False") == "True" or TESTING
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") + [
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    if host.strip()
+] + [
     "crimson-hazel-f17dca3230bc.herokuapp.com",
     "cmput404-crimson-swcarson-55711a031595.herokuapp.com",
     "crimson-aaron-aee261bd70fb.herokuapp.com",
-    "crimson1-428ed6e5ba28.herokuapp.com"
+    "crimson1-428ed6e5ba28.herokuapp.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://crimson-aaron-aee261bd70fb.herokuapp.com"
-    'https://crimson-hazel-f17dca3230bc.herokuapp.com',
+    origin.strip()
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+] + [
+    "https://crimson-aaron-aee261bd70fb.herokuapp.com",
+    "https://crimson-hazel-f17dca3230bc.herokuapp.com",
     "https://cmput404-crimson-swcarson-55711a031595.herokuapp.com",
     "https://crimson1-428ed6e5ba28.herokuapp.com",
 ]
@@ -44,7 +54,10 @@ CSRF_TRUSTED_ORIGINS = [
 # Default to localhost for development, override in production
 NODE_BASE_URL = os.environ.get('NODE_BASE_URL', 'http://127.0.0.1:8000')
 NODE_USERNAME = os.getenv("NODE_USERNAME", "admin")
-NODE_PASSWORD = os.getenv("NODE_PASSWORD", "node_password_change_me")
+NODE_PASSWORD = os.getenv(
+    "NODE_PASSWORD",
+    "node_password_change_me" if DEBUG else "",
+)
 
 # Application definition
 

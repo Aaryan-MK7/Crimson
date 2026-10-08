@@ -101,9 +101,11 @@ def fetch_remote_author_posts(remote_author):
                     urls.append(value.rstrip("/") + "/")
 
         base = fallback_author_url.rstrip("/")
+        # Entries is the current protocol endpoint; retain /posts/ as a
+        # fallback for older nodes.
         urls.extend([
-            f"{base}/posts/",
             f"{base}/entries/",
+            f"{base}/posts/",
         ])
 
         seen = set()
@@ -182,7 +184,9 @@ def fetch_remote_author_posts(remote_author):
             if visibility == "DELETED":
                 continue
 
-            fqid = normalize_fqid(post.get("id"))
+            # Entry IDs are opaque remote URLs; unlike author IDs they must
+            # not be rewritten or have a trailing slash appended.
+            fqid = str(post.get("id") or "").strip()
             if not fqid:
                 continue
             print(f"\nPost {i} raw data:")

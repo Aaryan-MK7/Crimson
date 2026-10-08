@@ -5,6 +5,8 @@ urlpatterns = [
     # UI
     path('like/<str:object_type>/<uuid:object_id>/', views.toggle_like, name='toggle-like'),
     path('entry/<path:entry_id>/comment/', views.add_comment, name='add_comment'),
+    # Backwards-compatible alias used by older clients and integrations.
+    path('add_comment/<path:entry_id>/', views.add_comment, name='add-comment-legacy'),
 
     # API - comments
     path('api/authors/<path:author_id>/entries/<path:entry_id>/comments/', views.EntryCommentsView.as_view()),

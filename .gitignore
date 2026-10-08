@@ -6,3 +6,6 @@ __pycache__/
 todo.md
 .DS_Store
 settings.py
+staticfiles/
+db.sqlite3
+*.sqlite3

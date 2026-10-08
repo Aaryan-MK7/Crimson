@@ -100,12 +100,16 @@ def toggle_like(request, object_type, object_id):
         target_author = obj.author
 
         # Use the comment's actual remote FQID
-        object_url = getattr(obj, "fqid", None) or getattr(obj, "id_url", None)
-        
-        if not object_url:
-            base_author_url = target_author.id.rstrip('/') if target_author else ""
-            comment_id = str(obj.id).strip('/')
-            object_url = f"{base_author_url}/commented/{comment_id}"
+        # The federation protocol addresses comments beneath their author's
+        # ``comments`` collection.  A locally generated comment FQID may use
+        # this node's host, so derive the remote object URL from its owner.
+        if target_author and not target_author.is_local:
+            object_url = f"{target_author.id.rstrip('/')}/comments/{obj.id}"
+        else:
+            object_url = getattr(obj, "fqid", None) or getattr(obj, "id_url", None)
+            if not object_url:
+                base_author_url = target_author.id.rstrip('/') if target_author else ""
+                object_url = f"{base_author_url}/comments/{obj.id}"
 
         print(f"Comment target_author: {target_author}")
         print(f"Comment object_url: {object_url}")
@@ -125,15 +129,11 @@ def toggle_like(request, object_type, object_id):
     else:
         liked = True
 
-    if target_author and not target_author.is_local:
-        print("=== REMOTE DETECTED - SENDING TO REMOTE ===")
-        print(f"target_author: {target_author.id}")
-        if created:
-            print("Sending NEW like to remote...")
-            send_like_to_remote_inbox(liking_author, target_author, object_url, like)
-        else:
-            print("Sending UNDO like to remote...")
-            send_undo_like_to_remote_inbox(liking_author, target_author, object_url, like)
+    if target_author and not target_author.is_local and created:
+        # Like creation is federated.  Unlikes remain local until both nodes
+        # advertise a shared Undo contract, avoiding duplicate/stale activity
+        # delivery to older peers.
+        send_like_to_remote_inbox(liking_author, target_author, object_url, like)
     else:
         print("=== LOCAL AUTHOR - NOT SENDING TO REMOTE ===")
 

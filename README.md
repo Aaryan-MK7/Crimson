@@ -2,6 +2,10 @@
 
 > A social network with no single home.
 
+[![Project preview](https://github.com/Aaryan-MK7/Crimson/actions/workflows/pages.yml/badge.svg)](https://aaryan-mk7.github.io/Crimson/)
+
+**[Open the public project preview →](https://aaryan-mk7.github.io/Crimson/)**
+
 Crimson is a federated social network made of independently operated nodes. Each node is a complete web application with its own users, database, media, moderation, and administration. Nodes can still discover one another and exchange posts, follow requests, comments, and likes through authenticated APIs.
 
 The result feels like one connected social network, but control remains distributed. A community can run its own node, define its own membership rules, and participate in the wider network without handing its entire social graph to a central platform.

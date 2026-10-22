@@ -28,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
 TESTING = "test" in sys.argv
 DEBUG = os.getenv("DEBUG", "False") == "True" or TESTING
+DEMO_MODE = os.getenv("DEMO_MODE", "False") == "True"
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -39,6 +40,8 @@ ALLOWED_HOSTS = [
     "crimson-aaron-aee261bd70fb.herokuapp.com",
     "crimson1-428ed6e5ba28.herokuapp.com",
 ]
+if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
@@ -50,9 +53,15 @@ CSRF_TRUSTED_ORIGINS = [
     "https://cmput404-crimson-swcarson-55711a031595.herokuapp.com",
     "https://crimson1-428ed6e5ba28.herokuapp.com",
 ]
+if os.getenv("RENDER_EXTERNAL_URL"):
+    CSRF_TRUSTED_ORIGINS.append(os.environ["RENDER_EXTERNAL_URL"])
 
 # Default to localhost for development, override in production
-NODE_BASE_URL = os.environ.get('NODE_BASE_URL', 'http://127.0.0.1:8000')
+NODE_BASE_URL = (
+    os.environ.get('NODE_BASE_URL')
+    or os.environ.get('RENDER_EXTERNAL_URL')
+    or 'http://127.0.0.1:8000'
+)
 NODE_USERNAME = os.getenv("NODE_USERNAME", "admin")
 NODE_PASSWORD = os.getenv(
     "NODE_PASSWORD",
@@ -191,6 +200,7 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
+CLOUDINARY_ENABLED = all(CLOUDINARY_STORAGE.values())
 
 # Explicitly configure the cloudinary library
 import cloudinary
@@ -201,5 +211,5 @@ cloudinary.config(
     secure = True,
 )
 
-if not DEBUG:
+if not DEBUG and CLOUDINARY_ENABLED:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

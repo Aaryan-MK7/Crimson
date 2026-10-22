@@ -13,7 +13,7 @@ class Entry(models.Model):
     Local posts use 'author' + 'image' field.
     Remote posts use 'remote_author' + 'image_url' or base64 in 'content'.
     """
-    if not settings.DEBUG:
+    if not settings.DEBUG and settings.CLOUDINARY_ENABLED:
         image_storage = MediaCloudinaryStorage()
     else:
         image_storage = None

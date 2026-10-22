@@ -29,7 +29,7 @@ class Author(models.Model):
     def profile_static_path(instance, filename):
         return os.path.join('profile_images/', filename)
 
-    if not settings.DEBUG:
+    if not settings.DEBUG and settings.CLOUDINARY_ENABLED:
         image_storage = MediaCloudinaryStorage()
     else:
         image_storage = None

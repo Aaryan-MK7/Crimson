@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: crimson-demo
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: ./start.sh
+    healthCheckPath: /login/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: DEBUG
+        value: "False"
+      - key: DEMO_MODE
+        value: "True"
+      - key: DEMO_USERNAME
+        value: demo
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: NODE_PASSWORD
+        generateValue: true
+      - key: NODE_USERNAME
+        value: crimson-demo
+      - key: DATABASE_URL
+        sync: false

@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.conf import settings
 from django.views import View
 from .models import Entry, HostedImage
 from accounts.models import Author, Follow
@@ -648,6 +649,11 @@ def create_entry(request):
     valid_visibilities = [v[0] for v in Entry.VISIBILITY_CHOICES]
 
     if request.content_type and request.content_type.startswith("multipart/form-data"):
+        if settings.DEMO_MODE:
+            return JsonResponse(
+                {"error": "Image uploads are disabled on the shared free-hosted demo"},
+                status=403,
+            )
 
         title = request.POST.get("title", "")
         content = request.POST.get("content", "")
@@ -864,6 +870,11 @@ def upload_hosted_image(request):
 
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=400)
+    if settings.DEMO_MODE:
+        return JsonResponse(
+            {"error": "Image uploads are disabled on the shared free-hosted demo"},
+            status=403,
+        )
 
     image_file = request.FILES.get("image")
 
@@ -949,6 +960,11 @@ def edit_entry(request, entry_id):
         new_image = request.FILES.get("image")
 
         if new_image:
+            if settings.DEMO_MODE:
+                return JsonResponse(
+                    {"error": "Image uploads are disabled on the shared free-hosted demo"},
+                    status=403,
+                )
             entry.image = new_image
 
         entry.save()

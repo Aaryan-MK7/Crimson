@@ -1,3 +1,4 @@
+import os
 import requests
 from urllib.parse import unquote
 from django.contrib import messages
@@ -11,6 +12,7 @@ from nodes.authentication import RemoteNodeAuthentication
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
+from django.conf import settings
 
 from .models import Author, FollowRequest, Follow
 from posts.models import Entry
@@ -1209,6 +1211,9 @@ def edit_profile(request, author_id=None):
 
     current_user_author = getattr(request.user, "author", None)
     if request.method == "POST":
+        if settings.DEMO_MODE and request.user.username == os.getenv("DEMO_USERNAME", "demo"):
+            messages.info(request, "The public demo profile is protected from permanent changes.")
+            return redirect('author-profile', author_id=author.id)
         form = AuthorUpdateForm(
             request.POST,
             request.FILES,
@@ -1237,6 +1242,9 @@ def logout_view(request):
     return redirect("login")
 
 def signup_view(request):
+    if settings.DEMO_MODE:
+        messages.info(request, "Public sign-up is disabled for this shared demo.")
+        return redirect("login")
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 .env
 !.env.example
+.neon
 *.sqlite3
 todo.md
 .DS_Store

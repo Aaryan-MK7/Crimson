@@ -2,9 +2,11 @@
 
 > A social network with no single home.
 
-[![Project preview](https://github.com/Aaryan-MK7/Crimson/actions/workflows/pages.yml/badge.svg)](https://aaryan-mk7.github.io/Crimson/)
+[![Live demo](https://img.shields.io/website?url=https%3A%2F%2Fcrimson-demo.onrender.com%2Flogin%2F&label=live%20demo)](https://crimson-demo.onrender.com)
 
-**[Open the public project preview →](https://aaryan-mk7.github.io/Crimson/)**
+**[Open the live application →](https://crimson-demo.onrender.com)** · [View the static walkthrough](https://aaryan-mk7.github.io/Crimson/)
+
+Use **Explore the shared demo** to enter without a password. The hosted demo supports seeded browsing and text publishing; image uploads are disabled because the free deployment has no durable media storage. The free Render service may take about a minute to wake after inactivity.
 
 Crimson is a federated social network made of independently operated nodes. Each node is a complete web application with its own users, database, media, moderation, and administration. Nodes can still discover one another and exchange posts, follow requests, comments, and likes through authenticated APIs.
 
@@ -291,6 +293,7 @@ A deployed node should configure:
 - `NODE_BASE_URL` — the public URL used to generate FQIDs.
 - `DATABASE_URL` — a PostgreSQL connection URL.
 - `NODE_USERNAME` and `NODE_PASSWORD` — credentials for configured node-to-node requests.
+- `DEMO_MODE=True` and `DEMO_USERNAME` — opt in to passwordless access for one seeded, approved demo author.
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` when using Cloudinary media storage.
 
 Each node should have its own public URL and database. Sharing a database between nodes would defeat the ownership model and can create identity collisions.

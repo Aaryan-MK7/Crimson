@@ -1,10 +1,30 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import User
 import json
 from unittest.mock import patch, MagicMock
 
 from accounts.models import Author, FollowRequest, Follow
 from nodes.models import RemoteNode
+
+
+@override_settings(DEMO_MODE=True, DEMO_USERNAME='demo')
+class DemoLoginTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='demo', password='unused-password')
+        self.user.author.is_approved = True
+        self.user.author.save()
+
+    def test_demo_login_authenticates_seeded_identity(self):
+        response = self.client.post('/demo-login/')
+
+        self.assertRedirects(response, '/')
+        self.assertEqual(int(self.client.session['_auth_user_id']), self.user.id)
+
+    @override_settings(DEMO_MODE=False)
+    def test_demo_login_is_hidden_outside_demo_mode(self):
+        response = self.client.post('/demo-login/')
+
+        self.assertEqual(response.status_code, 404)
 
 
 class AuthorModelTest(TestCase):

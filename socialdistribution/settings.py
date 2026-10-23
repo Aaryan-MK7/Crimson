@@ -29,6 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
 TESTING = "test" in sys.argv
 DEBUG = os.getenv("DEBUG", "False") == "True" or TESTING
 DEMO_MODE = os.getenv("DEMO_MODE", "False") == "True"
+DEMO_USERNAME = os.getenv("DEMO_USERNAME", "demo")
 
 ALLOWED_HOSTS = [
     host.strip()

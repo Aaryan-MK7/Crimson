@@ -768,7 +768,8 @@ class InboxView(APIView):
 # UI views
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.views.decorators.http import require_POST
 @approved_author_required
 def authors_list(request):
     """Show all authors on the node."""
@@ -1358,7 +1359,27 @@ def login_view(request):
     else:
         form = AuthenticationForm()
 
-    return render(request, "accounts/login.html", {"form": form})
+    return render(request, "accounts/login.html", {
+        "form": form,
+        "demo_mode": settings.DEMO_MODE,
+    })
+
+
+@require_POST
+def demo_login_view(request):
+    if not settings.DEMO_MODE:
+        return HttpResponseNotFound()
+
+    user = get_object_or_404(User, username=settings.DEMO_USERNAME)
+    try:
+        approved = user.author.is_approved
+    except Author.DoesNotExist:
+        approved = False
+    if not user.is_active or not approved:
+        return HttpResponseNotFound()
+
+    login(request, user)
+    return redirect("home")
 
 
 #TESTING

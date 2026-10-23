@@ -46,7 +46,8 @@ uiurlpatterns = [
     path('me/edit/', views.edit_profile, name='edit-my-profile'),
     path('authors/<path:author_id>/edit/', views.edit_profile, name='edit-profile'), #This is important. DO NOT REMOVE
     
-    path('login/', views.login_view, name='login'),    
+    path('login/', views.login_view, name='login'),
+    path('demo-login/', views.demo_login_view, name='demo-login'),
     path('logout/', views.logout_view, name='logout'),    
     path('signup/', views.signup_view, name='signup'),
     
